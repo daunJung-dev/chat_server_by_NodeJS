@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>/public/chat.html</title>
+</head>
+<body>
+    
+    <div>채팅이 시작됐습니다!</div>
+    <div id="box"></div>
+    <form>
+        사용자: <input type="text" name="sender"><br>
+        메세지: <input type="text" name="message"><br>
+        <input type="submit" value="전송">
+    </form>
+    
+    <script>
+        var size = 0;
+        setInterval(function() {
+            var url = "http://localhost:3000/recieve?size="+size;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if(this.readyState==4&&this.status==200&&this.responseText!=""){
+                    var box = document.querySelector('#box');
+                    var data = this.responseText;
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    var messages = obj.messages;
+                    var rows = box.innerHTML;
+                    for (var i=0; i<messages.length; i++) {
+                        rows += messages[i].sender+":"+messages[i].message+"<br>";
+                    }
+                    box.innerHTML = rows;
+                    size = Number(obj.total);
+                }
+            }
+            xhr.open("GET", url, true);
+            xhr.send();
+        },1000);
+        
+        var form = document.forms[0];
+        form.onsubmit = function() {
+            event.preventDefault();
+            var sender = this.sender.value;
+            var message = this.message.value;
+            var url ="http://localhost:3000/send?";
+            url +="sender="+sender+"&message="+message;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function(){}
+            xhr.open("GET",url,true);
+            xhr.send();
+        }
+    </script>
+    
+</body>
+</html>
