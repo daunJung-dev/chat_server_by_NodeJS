@@ -38,3 +38,4 @@ var server = http.createServer(app);
 server.listen(app.get('port'), ()=>{
     console.log('localhsot:%d', app.get('port'));
 });
+console.log('수정')
